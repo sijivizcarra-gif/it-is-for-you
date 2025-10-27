@@ -1,16 +1,16 @@
 // Animation Timeline
 const animationTimeline = () => {
-  // Spit chars that needs to be animated individually
+  // Split chars that need to be animated individually
   const textBoxChars = document.getElementsByClassName("hbd-chatbox")[0];
   const hbd = document.getElementsByClassName("wish-hbd")[0];
 
   textBoxChars.innerHTML = `<span>${textBoxChars.innerHTML
     .split("")
-    .join("</span><span>")}</span`;
+    .join("</span><span>")}</span>`;
 
   hbd.innerHTML = `<span>${hbd.innerHTML
     .split("")
-    .join("</span><span>")}</span`;
+    .join("</span><span>")}</span>`;
 
   const ideaTextTrans = {
     opacity: 0,
@@ -31,75 +31,41 @@ const animationTimeline = () => {
   tl.to(".container", 0.1, {
     visibility: "visible",
   })
-    .from(".one", 0.7, {
-      opacity: 0,
-      y: 10,
-    })
-    .from(".two", 0.4, {
-      opacity: 0,
-      y: 10,
-    })
-    .to(
-      ".one",
-      0.7,
-      {
-        opacity: 0,
-        y: 10,
-      },
-      "+=2.5"
-    )
-    .to(
-      ".two",
-      0.7,
-      {
-        opacity: 0,
-        y: 10,
-      },
-      "-=1"
-    )
-    .from(".three", 0.7, {
-      opacity: 0,
-      y: 10,
-      // scale: 0.7
-    })
-    .to(
-      ".three",
-      0.7,
-      {
-        opacity: 0,
-        y: 10,
-      },
-      "+=2"
-    )
-    .from(".four", 0.7, {
-      scale: 0.2,
-      opacity: 0,
-    })
-    .from(".fake-btn", 0.3, {
-      scale: 0.2,
-      opacity: 0,
-    })
+    .from(".one", 0.7, { opacity: 0, y: 10 })
+    .from(".two", 0.4, { opacity: 0, y: 10 })
+    .to(".one", 0.7, { opacity: 0, y: 10 }, "+=2.5")
+    .to(".two", 0.7, { opacity: 0, y: 10 }, "-=1")
+    .from(".three", 0.7, { opacity: 0, y: 10 })
+    .to(".three", 0.7, { opacity: 0, y: 10 }, "+=2")
+    .from(".four", 0.7, { scale: 0.2, opacity: 0 })
+    .from(".fake-btn", 0.3, { scale: 0.2, opacity: 0 })
+
+    // ✨ TYPEWRITER EFFECT + SOUND
     .staggerTo(
       ".hbd-chatbox span",
       0.5,
       {
         visibility: "visible",
+        onStart: () => {
+          const typeSound = document.getElementById("typeSound");
+          if (typeSound && typeSound.paused) {
+            typeSound.currentTime = 0;
+            typeSound.play();
+          }
+        },
+        onComplete: () => {
+          const typeSound = document.getElementById("typeSound");
+          if (typeSound) {
+            typeSound.pause();
+            typeSound.currentTime = 0;
+          }
+        },
       },
       0.05
     )
-    .to(".fake-btn", 0.1, {
-      backgroundColor: "rgb(127, 206, 248)",
-    })
-    .to(
-      ".four",
-      0.5,
-      {
-        scale: 0.2,
-        opacity: 0,
-        y: -150,
-      },
-      "+=0.7"
-    )
+
+    .to(".fake-btn", 0.1, { backgroundColor: "rgb(127, 206, 248)" })
+    .to(".four", 0.5, { scale: 0.2, opacity: 0, y: -150 }, "+=0.7")
     .from(".idea-1", 0.7, ideaTextTrans)
     .to(".idea-1", 0.7, ideaTextTransLeave, "+=1.5")
     .from(".idea-2", 0.7, ideaTextTrans)
@@ -127,24 +93,8 @@ const animationTimeline = () => {
       },
       "+=0.5"
     )
-    .to(
-      ".idea-5 span",
-      0.7,
-      {
-        rotation: 90,
-        x: 8,
-      },
-      "+=0.4"
-    )
-    .to(
-      ".idea-5",
-      0.7,
-      {
-        scale: 0.2,
-        opacity: 0,
-      },
-      "+=2"
-    )
+    .to(".idea-5 span", 0.7, { rotation: 90, x: 8 }, "+=0.4")
+    .to(".idea-5", 0.7, { scale: 0.2, opacity: 0 }, "+=2")
     .staggerFrom(
       ".idea-6 span",
       0.8,
@@ -168,17 +118,25 @@ const animationTimeline = () => {
       0.2,
       "+=1"
     )
+
+    // 🎵 PLAY BIRTHDAY MUSIC BEFORE BALLOONS
+    .add(() => {
+      const birthdayMusic = document.getElementById("birthdayMusic");
+      if (birthdayMusic) {
+        birthdayMusic.currentTime = 0;
+        birthdayMusic.play();
+        tl.pause(); // pause animation until music ends
+        birthdayMusic.onended = () => {
+          tl.resume(); // resume after song finishes
+        };
+      }
+    })
+
     .staggerFromTo(
       ".baloons img",
       2.5,
-      {
-        opacity: 0.9,
-        y: 1400,
-      },
-      {
-        opacity: 1,
-        y: -1000,
-      },
+      { opacity: 0.9, y: 1400 },
+      { opacity: 1, y: -1000 },
       0.2
     )
     .from(
@@ -205,7 +163,6 @@ const animationTimeline = () => {
       {
         opacity: 0,
         y: -50,
-        // scale: 0.3,
         rotation: 150,
         skewX: "30deg",
         ease: Elastic.easeOut.config(1, 0.5),
@@ -256,26 +213,18 @@ const animationTimeline = () => {
       zIndex: "-1",
     })
     .staggerFrom(".nine p", 1, ideaTextTrans, 1.2)
-    .to(
-      ".last-smile",
-      0.5,
-      {
-        rotation: 90,
-      },
-      "+=1"
-    );
-
-  // tl.seek("currentStep");
-  // tl.timeScale(2);
+    .to(".last-smile", 0.5, { rotation: 90 }, "+=1");
 
   // Restart Animation on click
   const replyBtn = document.getElementById("replay");
   replyBtn.addEventListener("click", () => {
     tl.restart();
+    document.getElementById("typeSound")?.pause();
+    document.getElementById("birthdayMusic")?.pause();
   });
 };
 
-// Import the data to customize and insert them into page
+// Import customize.json data
 const fetchData = () => {
   fetch("customize.json")
     .then((data) => data.json())
@@ -302,4 +251,4 @@ const resolveFetch = () => {
   });
 };
 
-resolveFetch().then(animationTimeline());
+resolveFetch().then(animationTimeline);
